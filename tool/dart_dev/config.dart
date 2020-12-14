@@ -11,7 +11,7 @@ final config = {
       Glob('tool/'),
     ],
   'format': FormatTool()
-    ..formatterArgs = ['--line-length 120']
+    ..formatterArgs = ['--line-length=120']
     ..exclude = [
       Glob('test/**/generated_runner_test.dart'),
     ],
