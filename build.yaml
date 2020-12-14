@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      test_html_builder:
+        options:
+          templates:
+            "test/unit/test_template.html":
+              - "test/unit/**_test.dart"
