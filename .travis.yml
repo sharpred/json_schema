@@ -10,7 +10,7 @@ cache:
 install: true
 script:
   - pub get
-  - pub run dependency_validator --ignore coverage
+  - pub run dependency_validator --ignore coverage,test_html_builder
   - pub run dart_dev dart2-only -- format --check
   - pub run dart_dev analyze
   - pub run dart_dev test -p vm
