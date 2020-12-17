@@ -10,11 +10,7 @@ final config = {
       Glob('test/'),
       Glob('tool/'),
     ],
-  'format': FormatTool()
-    ..formatterArgs = ['--line-length=120']
-    ..exclude = [
-      Glob('test/**/generated_runner_test.dart'),
-    ],
+  'format': FormatTool()..formatterArgs = ['--line-length=120'],
   'serve': WebdevServeTool()..webdevArgs = ['web:9000'],
-  'test': TestTool(), /* ..testArgs = ['-p', 'vm,chrome'] */
+  'test': TestTool(),
 };
