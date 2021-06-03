@@ -175,6 +175,7 @@ class JsonSchema {
     if (schema is String) {
       try {
         data = json.decode(schema);
+        //print("****** schema data $data");
       } catch (e) {
         throw new ArgumentError(
             'String data provided to createSchema is not valid JSON.');
@@ -208,7 +209,7 @@ class JsonSchema {
   ///
   /// This method is asyncronous to support automatic fetching of sub-[JsonSchema]s for items,
   /// properties, and sub-properties of the root schema.
-  static Future<JsonSchema> createSchemaFromUrl(String schemaUrl,
+  static Future<JsonSchema?> createSchemaFromUrl(String schemaUrl,
       {SchemaVersion? schemaVersion}) {
     if (globalCreateJsonSchemaFromUrl == null) {
       throw new StateError('no globalCreateJsonSchemaFromUrl defined!');
@@ -1424,11 +1425,18 @@ This functionality will be removed in 3.0.
 
       final AsyncRetrievalOperation asyncRefSchemaOperation =
           _refProviderAsync == null
-              ? () => createSchemaFromUrl(_ref.toString()).then(
-                  addSchemaFunction as FutureOr<JsonSchema> Function(
-                      JsonSchema))
-              : () => _refProviderAsync!(_ref.toString()).then(addSchemaFunction
-                  as FutureOr<JsonSchema> Function(JsonSchema?));
+              ? () async {
+                  final JsonSchema? schema =
+                      await createSchemaFromUrl(_ref.toString());
+                  print("****** schema ${schema?._path}");
+                  return addSchemaFunction(schema) as FutureOr<JsonSchema>;
+                }
+              : () async {
+                  final JsonSchema? schema =
+                      await _refProviderAsync!(_ref.toString());
+                  print("****** schema ${schema?._path}");
+                  return addSchemaFunction(schema) as FutureOr<JsonSchema>;
+                };
 
       final SyncRetrievalOperation? syncRefSchemaOperation =
           _refProvider != null

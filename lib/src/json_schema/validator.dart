@@ -108,7 +108,7 @@ class Validator {
       } on FormatException {
         return false;
       } catch (e) {
-        // _logger.shout('Unexpected Exception: $e'); TODO: re-add logger
+        print('Unexpected Exception: $e');
         return false;
       }
     }
@@ -359,9 +359,7 @@ class Validator {
         break;
       case 'uri':
         {
-          final isValid =
-              defaultValidators.uriValidator as dynamic Function(String?)? ??
-                  (_) => false;
+          final isValid = defaultValidators.uriValidator;
 
           if (!isValid(instance.data)) {
             _err('"uri" format not accepted $instance', instance.path,
@@ -375,9 +373,8 @@ class Validator {
             // TODO: deal with schema.format
             _err('${schema.format} not supported as format before draft6',
                 instance.path, schema.path!);
-          final isValid = defaultValidators.uriReferenceValidator as dynamic
-                  Function(String?)? ??
-              (_) => false;
+
+          final isValid = defaultValidators.uriReferenceValidator;
 
           if (!isValid(instance.data)) {
             _err('"uri-reference" format not accepted $instance', instance.path,
@@ -390,9 +387,8 @@ class Validator {
           if (schema.schemaVersion != SchemaVersion.draft6)
             _err('${schema.format} not supported as format before draft6',
                 instance.path, schema.path!);
-          final isValid = defaultValidators.uriTemplateValidator as dynamic
-                  Function(String?)? ??
-              (_) => false;
+
+          final isValid = defaultValidators.uriTemplateValidator;
 
           if (!isValid(instance.data)) {
             _err('"uri-template" format not accepted $instance', instance.path,
@@ -402,9 +398,7 @@ class Validator {
         break;
       case 'email':
         {
-          final isValid =
-              defaultValidators.emailValidator as dynamic Function(String?)? ??
-                  (_) => false;
+          final isValid = defaultValidators.emailValidator;
 
           if (!isValid(instance.data)) {
             _err('"email" format not accepted $instance', instance.path,

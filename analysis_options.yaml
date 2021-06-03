@@ -1,4 +1,7 @@
 analyzer:
+  errors:
+    # allow having TODOs in the code
+    todo: ignore
   exclude:
     - test/src_list.dart
     - node_modules/**

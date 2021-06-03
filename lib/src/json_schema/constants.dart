@@ -92,7 +92,7 @@ class SchemaVersion implements Comparable<SchemaVersion> {
       identical(this, other) ||
       other is SchemaVersion &&
           runtimeType == other.runtimeType &&
-          other.value == other.value;
+          value == other.value;
 
   SchemaVersion copy() => this;
 

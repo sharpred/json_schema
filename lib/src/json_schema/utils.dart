@@ -89,12 +89,12 @@ class JsonSchemaUtils {
 }
 
 class DefaultValidators {
-  emailValidator(String email) =>
-      JsonSchemaValidationRegexes.email.firstMatch(email) != null;
+  emailValidator(String? email) =>
+      JsonSchemaValidationRegexes.email.firstMatch(email!) != null;
 
-  uriValidator(String uri) {
+  uriValidator(String? uri) {
     try {
-      final result = Uri.parse(uri);
+      final result = Uri.parse(uri!);
       // If a URI has no scheme, it is invalid.
       if (result.path.startsWith('//') || result.scheme.isEmpty) return false;
       // If a URI contains spaces, it is invalid.
@@ -107,9 +107,9 @@ class DefaultValidators {
     }
   }
 
-  uriReferenceValidator(String uriReference) {
+  uriReferenceValidator(String? uriReference) {
     try {
-      Uri.parse(uriReference);
+      Uri.parse(uriReference!);
       // If a URI contains spaces, it is invalid.
       if (uriReference.contains(' ')) return false;
       // If a URI contains backslashes, it is invalid.
@@ -120,9 +120,9 @@ class DefaultValidators {
     }
   }
 
-  uriTemplateValidator(String uriTemplate) {
+  uriTemplateValidator(String? uriTemplate) {
     try {
-      new UriTemplate(uriTemplate);
+      new UriTemplate(uriTemplate!);
       return true;
     } catch (e) {
       return false;

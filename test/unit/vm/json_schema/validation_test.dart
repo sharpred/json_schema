@@ -269,7 +269,7 @@ void main([List<String>? args]) {
         // that the schema satisfies the schema for schemas.
         final url = version;
         JsonSchema.createSchemaFromUrl(url).then(expectAsync1((schema) {
-          expect(schema.validate(schema.schemaMap), isTrue);
+          expect(schema?.validate(schema.schemaMap), isTrue);
         }));
       });
     }
@@ -376,9 +376,9 @@ void main([List<String>? args]) {
     final schema =
         await JsonSchema.createSchemaFromUrl('test/relative_refs/root.json');
 
-    expect(schema.validate({"string": 123, "integer": 123}), isFalse);
-    expect(schema.validate({"string": "a string", "integer": "a string"}),
+    expect(schema?.validate({"string": 123, "integer": 123}), isFalse);
+    expect(schema?.validate({"string": "a string", "integer": "a string"}),
         isFalse);
-    expect(schema.validate({"string": "a string", "integer": 123}), isTrue);
+    expect(schema?.validate({"string": "a string", "integer": 123}), isTrue);
   });
 }
