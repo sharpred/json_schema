@@ -43,8 +43,10 @@ import 'package:json_schema/src/json_schema/utils.dart';
 /// The globally configured json shema class. Any json schema class that is not
 /// explicitly given a [JsonSchema] instance upon construction will
 /// inherit this global one.
-CreateJsonSchemaFromUrl get globalCreateJsonSchemaFromUrl => _globalCreateJsonSchemaFromUrl;
-set globalCreateJsonSchemaFromUrl(CreateJsonSchemaFromUrl createJsonSchemaFromUrl) {
+CreateJsonSchemaFromUrl? get globalCreateJsonSchemaFromUrl =>
+    _globalCreateJsonSchemaFromUrl;
+set globalCreateJsonSchemaFromUrl(
+    CreateJsonSchemaFromUrl? createJsonSchemaFromUrl) {
   if (createJsonSchemaFromUrl == null) {
     throw new ArgumentError('json_schema: Global createJsonSchemaFromUrl '
         'implementation must not be null.');
@@ -53,7 +55,7 @@ set globalCreateJsonSchemaFromUrl(CreateJsonSchemaFromUrl createJsonSchemaFromUr
   _globalCreateJsonSchemaFromUrl = createJsonSchemaFromUrl;
 }
 
-CreateJsonSchemaFromUrl _globalCreateJsonSchemaFromUrl;
+CreateJsonSchemaFromUrl? _globalCreateJsonSchemaFromUrl;
 
 /// Reset the globally configured json schema class.
 void resetGlobalTransportPlatform() {
@@ -61,14 +63,10 @@ void resetGlobalTransportPlatform() {
 }
 
 /// Default validators for all [JsonSchema]s.
-DefaultValidators get defaultValidators => _defaultValidators ?? new DefaultValidators();
+DefaultValidators get defaultValidators =>
+    _defaultValidators ?? new DefaultValidators();
 set defaultValidators(DefaultValidators defaultValidators) {
-  if (defaultValidators == null) {
-    throw new ArgumentError('json_schema: default validators '
-        'implementation must not be null.');
-  }
-
   _defaultValidators = defaultValidators;
 }
 
-DefaultValidators _defaultValidators;
+DefaultValidators? _defaultValidators;

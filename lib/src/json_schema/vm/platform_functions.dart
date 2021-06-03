@@ -45,11 +45,11 @@ import 'package:json_schema/src/json_schema/json_schema.dart';
 import 'package:json_schema/src/json_schema/utils.dart';
 
 Future<JsonSchema> createSchemaFromUrlVm(String schemaUrl,
-    {SchemaVersion schemaVersion}) async {
+    {SchemaVersion? schemaVersion}) async {
   final uriWithFrag = Uri.parse(schemaUrl);
   final uri =
       schemaUrl.endsWith('#') ? uriWithFrag : uriWithFrag.removeFragment();
-  Map schemaMap;
+  Map? schemaMap;
   if (uri.scheme == 'http' || uri.scheme == 'https') {
     // Setup the HTTP request.
     final httpRequest = await new HttpClient().getUrl(uri);
@@ -57,7 +57,7 @@ Future<JsonSchema> createSchemaFromUrlVm(String schemaUrl,
     // Fetch the response
     final response = await httpRequest.close();
     // Convert the response into a string
-    if (response.statusCode == HttpStatus.NOT_FOUND) {
+    if (response.statusCode == HttpStatus.notFound) {
       throw new ArgumentError('Schema at URL: $schemaUrl can\'t be found.');
     }
     final schemaText = await new Utf8Decoder().bind(response).join();
@@ -76,5 +76,5 @@ Future<JsonSchema> createSchemaFromUrlVm(String schemaUrl,
       schemaVersion: schemaVersion, fetchedFromUri: uri);
   final schema =
       JsonSchemaUtils.getSubMapFromFragment(parentSchema, uriWithFrag);
-  return schema ?? parentSchema;
+  return schema;
 }

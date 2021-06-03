@@ -53,12 +53,27 @@ class SchemaType implements Comparable<SchemaType> {
 
   static const SchemaType string = const SchemaType._(6);
 
-  static List<SchemaType> get values => const <SchemaType>[array, boolean, integer, number, nullValue, object, string];
+  static List<SchemaType> get values => const <SchemaType>[
+        array,
+        boolean,
+        integer,
+        number,
+        nullValue,
+        object,
+        string
+      ];
 
   final int value;
 
   @override
   int get hashCode => value;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SchemaType &&
+          runtimeType == other.runtimeType &&
+          other.hashCode == hashCode;
 
   SchemaType copy() => this;
 
@@ -67,27 +82,25 @@ class SchemaType implements Comparable<SchemaType> {
 
   @override
   String toString() {
-    switch (this) {
-      case array:
+    switch (this.value) {
+      case 0:
         return 'array';
-      case boolean:
+      case 1:
         return 'boolean';
-      case integer:
+      case 2:
         return 'integer';
-      case number:
+      case 3:
         return 'number';
-      case nullValue:
+      case 4:
         return 'null';
-      case object:
+      case 5:
         return 'object';
-      case string:
+      default:
         return 'string';
     }
-    return null;
   }
 
-  static SchemaType fromString(String s) {
-    if (s == null) return null;
+  static SchemaType? fromString(String s) {
     switch (s) {
       case 'array':
         return array;

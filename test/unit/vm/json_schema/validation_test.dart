@@ -49,9 +49,7 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_static/shelf_static.dart';
 import 'package:test/test.dart';
 
-final Logger _logger = new Logger('test_validation');
-
-void main([List<String> args]) {
+void main([List<String>? args]) {
   configureJsonSchemaForVm();
 
   // Serve remotes for ref tests.
@@ -92,13 +90,18 @@ void main([List<String> args]) {
   final allDraft6 = testSuiteFolderV6.listSync()
     ..addAll(optionalsV6.listSync());
 
-  final runAllTestsForDraftX = (SchemaVersion schemaVersion,
-      List<FileSystemEntity> allTests,
-      List<String> skipFiles,
-      List<String> skipTests,
-      {bool isSync = false,
-      RefProvider refProvider,
-      RefProviderAsync refProviderAsync}) {
+  final Null Function(
+          SchemaVersion, List<FileSystemEntity>, List<String>, List<String>,
+          {bool isSync,
+          JsonSchema? Function(String) refProvider,
+          Future<JsonSchema?> Function(String) refProviderAsync})
+      runAllTestsForDraftX = (SchemaVersion schemaVersion,
+          List<FileSystemEntity> allTests,
+          List<String> skipFiles,
+          List<String> skipTests,
+          {bool isSync = false,
+          RefProvider? refProvider,
+          RefProviderAsync? refProviderAsync}) {
     String shortSchemaVersion = schemaVersion.toString();
     if (schemaVersion == SchemaVersion.draft4) {
       shortSchemaVersion = 'draft4';
@@ -121,7 +124,7 @@ void main([List<String> args]) {
             final List validationTests = testEntry['tests'];
 
             validationTests.forEach((validationTest) {
-              final String validationDescription =
+              final String? validationDescription =
                   validationTest['description'];
               final String testName =
                   '${description} : ${validationDescription}';
@@ -131,8 +134,8 @@ void main([List<String> args]) {
 
               test(testName, () {
                 final instance = validationTest['data'];
-                bool validationResult;
-                final bool expectedResult = validationTest['valid'];
+                bool? validationResult;
+                final bool? expectedResult = validationTest['valid'];
                 if (isSync) {
                   final schema = JsonSchema.createSchema(schemaData,
                       schemaVersion: schemaVersion, refProvider: refProvider);
@@ -166,7 +169,6 @@ void main([List<String> args]) {
             "type": "integer"
           }
         '''));
-        break;
       case 'http://localhost:1234/subSchemas.json#/integer':
         return JsonSchema.createSchema(json.decode(r'''
           {
@@ -178,7 +180,6 @@ void main([List<String> args]) {
             }
         }
         ''')).resolvePath('#/integer');
-        break;
       case 'http://localhost:1234/subSchemas.json#/refToInteger':
         return JsonSchema.createSchema(json.decode(r'''
           {
@@ -190,14 +191,12 @@ void main([List<String> args]) {
             }
         }
         ''')).resolvePath('#/refToInteger');
-        break;
       case 'http://localhost:1234/folder/folderInteger.json':
         return JsonSchema.createSchema(json.decode(r'''
           {
             "type": "integer"
           }
         '''));
-        break;
       case 'http://localhost:1234/name.json#/definitions/orNull':
         return JsonSchema.createSchema(json.decode(r'''
           {
@@ -216,10 +215,8 @@ void main([List<String> args]) {
             "type": "string"
           }
         ''')).resolvePath('#/definitions/orNull');
-        break;
       default:
         return null;
-        break;
     }
   };
 

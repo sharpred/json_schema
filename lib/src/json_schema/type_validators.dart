@@ -79,7 +79,7 @@ class TypeValidators {
     throw FormatExceptions.bool(key, value);
   }
 
-  static Map object(String key, dynamic value) {
+  static Map object(String? key, dynamic value) {
     if (value is Map) return value;
     throw FormatExceptions.object(key, value);
   }

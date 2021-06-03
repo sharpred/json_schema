@@ -50,7 +50,7 @@ import 'package:json_schema/vm.dart';
 
 final Logger _logger = new Logger('test_invalid_schemas');
 
-void main([List<String> args]) {
+void main([List<String>? args]) {
   configureJsonSchemaForVm();
 
   if (args?.isEmpty == true) {
