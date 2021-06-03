@@ -38,9 +38,9 @@
 
 library json_schema.test_invalid_schemas;
 
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
 import 'package:test/test.dart';
@@ -54,17 +54,19 @@ void main([List<String> args]) {
   configureJsonSchemaForVm();
 
   if (args?.isEmpty == true) {
-    Logger.root.onRecord.listen((LogRecord r) => print('${r.loggerName} [${r.level}]:\t${r.message}'));
+    Logger.root.onRecord.listen(
+        (LogRecord r) => print('${r.loggerName} [${r.level}]:\t${r.message}'));
     Logger.root.level = Level.OFF;
   }
 
-  final Directory testSuiteFolder = new Directory('./test/invalid_schemas/draft4');
+  final Directory testSuiteFolder =
+      new Directory('./test/invalid_schemas/draft4');
 
   testSuiteFolder.listSync().forEach((testEntry) {
     final String shortName = path.basename(testEntry.path);
     group('Invalid schema (draft4): ${shortName}', () {
       if (testEntry is File) {
-        final List tests = convert.json.decode((testEntry).readAsStringSync());
+        final List tests = json.decode((testEntry).readAsStringSync());
         tests.forEach((testObject) {
           final schemaData = testObject['schema'];
           final description = testObject['description'];
@@ -73,13 +75,15 @@ void main([List<String> args]) {
             final catchException = expectAsync1((e) {
               _logger.info('Caught expected $e');
               if (!(e is FormatException)) {
-                _logger.info('${shortName} threw an unexpected error type of ${e.runtimeType}');
+                _logger.info(
+                    '${shortName} threw an unexpected error type of ${e.runtimeType}');
               }
               expect(e is FormatException, true);
             });
 
             try {
-              await JsonSchema.createSchemaAsync(schemaData, schemaVersion: SchemaVersion.draft4);
+              await JsonSchema.createSchemaAsync(schemaData,
+                  schemaVersion: SchemaVersion.draft4);
               fail('Schema is expected to be invalid, but was not.');
             } catch (e) {
               catchException(e);

@@ -48,7 +48,6 @@ If you want to create `JsonSchema`s synchronously, and you have $refs that canno
 
 ```dart 
 import 'package:json_schema/json_schema.dart';
-import 'package:dart2_constant/convert.dart';
 
 main() {
   final referencedSchema = {
@@ -255,7 +254,6 @@ If you have nested $refs that are either non-HTTP URIs or non-publicly-accessibl
 ```dart
 import 'dart:io';
 import 'dart:async';
-import 'package:dart2_constant/convert.dart';
 
 import 'package:json_schema/json_schema.dart';
 

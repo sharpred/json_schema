@@ -38,8 +38,8 @@
 
 library json_schema.test_validation;
 
+import 'dart:convert';
 import 'dart:io';
-import 'package:dart2_constant/convert.dart' as convert;
 import 'package:json_schema/json_schema.dart';
 import 'package:json_schema/vm.dart';
 import 'package:json_schema/src/json_schema/constants.dart';
@@ -55,14 +55,17 @@ void main([List<String> args]) {
   configureJsonSchemaForVm();
 
   // Serve remotes for ref tests.
-  final specFileHandler = createStaticHandler('test/JSON-Schema-Test-Suite/remotes');
+  final specFileHandler =
+      createStaticHandler('test/JSON-Schema-Test-Suite/remotes');
   io.serve(specFileHandler, 'localhost', 1234);
 
-  final additionalRemotesHandler = createStaticHandler('test/additional_remotes');
+  final additionalRemotesHandler =
+      createStaticHandler('test/additional_remotes');
   io.serve(additionalRemotesHandler, 'localhost', 4321);
 
   if (args?.isEmpty == true) {
-    Logger.root.onRecord.listen((LogRecord r) => print('${r.loggerName} [${r.level}]:\t${r.message}'));
+    Logger.root.onRecord.listen(
+        (LogRecord r) => print('${r.loggerName} [${r.level}]:\t${r.message}'));
     Logger.root.level = Level.OFF;
   }
 
@@ -74,18 +77,28 @@ void main([List<String> args]) {
   Logger.root.level = Level.OFF;
 
   // Draft 4 Tests
-  final Directory testSuiteFolderV4 = new Directory('./test/JSON-Schema-Test-Suite/tests/draft4');
-  final Directory optionalsV4 = new Directory(path.joinAll([testSuiteFolderV4.path, 'optional']));
-  final allDraft4 = testSuiteFolderV4.listSync()..addAll(optionalsV4.listSync());
+  final Directory testSuiteFolderV4 =
+      new Directory('./test/JSON-Schema-Test-Suite/tests/draft4');
+  final Directory optionalsV4 =
+      new Directory(path.joinAll([testSuiteFolderV4.path, 'optional']));
+  final allDraft4 = testSuiteFolderV4.listSync()
+    ..addAll(optionalsV4.listSync());
 
   // Draft 6 Tests
-  final Directory testSuiteFolderV6 = new Directory('./test/JSON-Schema-Test-Suite/tests/draft6');
-  final Directory optionalsV6 = new Directory(path.joinAll([testSuiteFolderV6.path, 'optional']));
-  final allDraft6 = testSuiteFolderV6.listSync()..addAll(optionalsV6.listSync());
+  final Directory testSuiteFolderV6 =
+      new Directory('./test/JSON-Schema-Test-Suite/tests/draft6');
+  final Directory optionalsV6 =
+      new Directory(path.joinAll([testSuiteFolderV6.path, 'optional']));
+  final allDraft6 = testSuiteFolderV6.listSync()
+    ..addAll(optionalsV6.listSync());
 
-  final runAllTestsForDraftX =
-      (SchemaVersion schemaVersion, List<FileSystemEntity> allTests, List<String> skipFiles, List<String> skipTests,
-          {bool isSync = false, RefProvider refProvider, RefProviderAsync refProviderAsync}) {
+  final runAllTestsForDraftX = (SchemaVersion schemaVersion,
+      List<FileSystemEntity> allTests,
+      List<String> skipFiles,
+      List<String> skipTests,
+      {bool isSync = false,
+      RefProvider refProvider,
+      RefProviderAsync refProviderAsync}) {
     String shortSchemaVersion = schemaVersion.toString();
     if (schemaVersion == SchemaVersion.draft4) {
       shortSchemaVersion = 'draft4';
@@ -95,19 +108,23 @@ void main([List<String> args]) {
 
     allTests.forEach((testEntry) {
       if (testEntry is File) {
-        group('Validations ($shortSchemaVersion) ${path.basename(testEntry.path)}', () {
+        group(
+            'Validations ($shortSchemaVersion) ${path.basename(testEntry.path)}',
+            () {
           // Skip these for now - reason shown.
           if (skipFiles.contains(path.basename(testEntry.path))) return;
 
-          final List tests = convert.json.decode((testEntry).readAsStringSync());
+          final List tests = json.decode((testEntry).readAsStringSync());
           tests.forEach((testEntry) {
             final schemaData = testEntry['schema'];
             final description = testEntry['description'];
             final List validationTests = testEntry['tests'];
 
             validationTests.forEach((validationTest) {
-              final String validationDescription = validationTest['description'];
-              final String testName = '${description} : ${validationDescription}';
+              final String validationDescription =
+                  validationTest['description'];
+              final String testName =
+                  '${description} : ${validationDescription}';
 
               // Individual test cases to skip - reason listed in comments.
               if (skipTests.contains(testName)) return;
@@ -117,13 +134,16 @@ void main([List<String> args]) {
                 bool validationResult;
                 final bool expectedResult = validationTest['valid'];
                 if (isSync) {
-                  final schema =
-                      JsonSchema.createSchema(schemaData, schemaVersion: schemaVersion, refProvider: refProvider);
+                  final schema = JsonSchema.createSchema(schemaData,
+                      schemaVersion: schemaVersion, refProvider: refProvider);
                   validationResult = schema.validate(instance);
                   expect(validationResult, expectedResult);
                 } else {
-                  final checkResult = expectAsync0(() => expect(validationResult, expectedResult));
-                  JsonSchema.createSchemaAsync(schemaData, schemaVersion: schemaVersion, refProvider: refProviderAsync)
+                  final checkResult = expectAsync0(
+                      () => expect(validationResult, expectedResult));
+                  JsonSchema.createSchemaAsync(schemaData,
+                          schemaVersion: schemaVersion,
+                          refProvider: refProviderAsync)
                       .then((schema) {
                     validationResult = schema.validate(instance);
                     checkResult();
@@ -141,14 +161,14 @@ void main([List<String> args]) {
   final RefProvider syncRefProvider = (String ref) {
     switch (ref) {
       case 'http://localhost:1234/integer.json':
-        return JsonSchema.createSchema(convert.json.decode(r'''
+        return JsonSchema.createSchema(json.decode(r'''
           {
             "type": "integer"
           }
         '''));
         break;
       case 'http://localhost:1234/subSchemas.json#/integer':
-        return JsonSchema.createSchema(convert.json.decode(r'''
+        return JsonSchema.createSchema(json.decode(r'''
           {
             "integer": {
               "type": "integer"
@@ -160,7 +180,7 @@ void main([List<String> args]) {
         ''')).resolvePath('#/integer');
         break;
       case 'http://localhost:1234/subSchemas.json#/refToInteger':
-        return JsonSchema.createSchema(convert.json.decode(r'''
+        return JsonSchema.createSchema(json.decode(r'''
           {
             "integer": {
               "type": "integer"
@@ -172,14 +192,14 @@ void main([List<String> args]) {
         ''')).resolvePath('#/refToInteger');
         break;
       case 'http://localhost:1234/folder/folderInteger.json':
-        return JsonSchema.createSchema(convert.json.decode(r'''
+        return JsonSchema.createSchema(json.decode(r'''
           {
             "type": "integer"
           }
         '''));
         break;
       case 'http://localhost:1234/name.json#/definitions/orNull':
-        return JsonSchema.createSchema(convert.json.decode(r'''
+        return JsonSchema.createSchema(json.decode(r'''
           {
             "definitions": {
               "orNull": {
@@ -223,23 +243,30 @@ void main([List<String> args]) {
   ];
 
   // Run all tests asynchronously with no ref provider.
-  runAllTestsForDraftX(SchemaVersion.draft4, allDraft4, commonSkippedFiles, commonSkippedTests);
-  runAllTestsForDraftX(SchemaVersion.draft6, allDraft6, commonSkippedFiles, commonSkippedTests);
+  runAllTestsForDraftX(
+      SchemaVersion.draft4, allDraft4, commonSkippedFiles, commonSkippedTests);
+  runAllTestsForDraftX(
+      SchemaVersion.draft6, allDraft6, commonSkippedFiles, commonSkippedTests);
 
   // Run all tests synchronously with a sync ref provider.
-  runAllTestsForDraftX(SchemaVersion.draft4, allDraft4, commonSkippedFiles, commonSkippedTests,
+  runAllTestsForDraftX(
+      SchemaVersion.draft4, allDraft4, commonSkippedFiles, commonSkippedTests,
       isSync: true, refProvider: syncRefProvider);
-  runAllTestsForDraftX(SchemaVersion.draft6, allDraft6, commonSkippedFiles, commonSkippedTests,
+  runAllTestsForDraftX(
+      SchemaVersion.draft6, allDraft6, commonSkippedFiles, commonSkippedTests,
       isSync: true, refProvider: syncRefProvider);
 
   // Run all tests asynchronously with an async ref provider.
-  runAllTestsForDraftX(SchemaVersion.draft4, allDraft4, commonSkippedFiles, commonSkippedTests,
+  runAllTestsForDraftX(
+      SchemaVersion.draft4, allDraft4, commonSkippedFiles, commonSkippedTests,
       refProviderAsync: asyncRefProvider);
-  runAllTestsForDraftX(SchemaVersion.draft6, allDraft6, commonSkippedFiles, commonSkippedTests,
+  runAllTestsForDraftX(
+      SchemaVersion.draft6, allDraft6, commonSkippedFiles, commonSkippedTests,
       refProviderAsync: asyncRefProvider);
 
   group('Schema self validation', () {
-    for (final version in SchemaVersion.values.map((value) => value.toString())) {
+    for (final version
+        in SchemaVersion.values.map((value) => value.toString())) {
       test('version: $version', () {
         // Pull in the official schema, verify description and then ensure
         // that the schema satisfies the schema for schemas.
@@ -349,10 +376,12 @@ void main([List<String> args]) {
 
   test('Schema from relative filesystem URI should be supported', () async {
     // this assumes that tests are run from the root directory of the project
-    final schema = await JsonSchema.createSchemaFromUrl('test/relative_refs/root.json');
+    final schema =
+        await JsonSchema.createSchemaFromUrl('test/relative_refs/root.json');
 
     expect(schema.validate({"string": 123, "integer": 123}), isFalse);
-    expect(schema.validate({"string": "a string", "integer": "a string"}), isFalse);
+    expect(schema.validate({"string": "a string", "integer": "a string"}),
+        isFalse);
     expect(schema.validate({"string": "a string", "integer": 123}), isTrue);
   });
 }

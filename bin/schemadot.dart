@@ -46,7 +46,6 @@
 /// the file, otherwise written to stdout.
 ///
 import 'dart:async';
-import 'package:dart2_constant/convert.dart' as convert2;
 import 'dart:convert' as convert;
 import 'dart:io';
 
@@ -88,8 +87,10 @@ Display this help screen
         abbr: 'h',
         defaultsTo: false);
 
-    _parser.addOption('in-uri', help: '', defaultsTo: null, allowMultiple: false, abbr: 'i', allowed: null);
-    _parser.addOption('out-file', help: '', defaultsTo: null, allowMultiple: false, abbr: 'o', allowed: null);
+    _parser.addOption('in-uri',
+        help: '', defaultsTo: null, abbr: 'i', allowed: null);
+    _parser.addOption('out-file',
+        help: '', defaultsTo: null, abbr: 'o', allowed: null);
     _parser.addOption('log-level',
         help: r'''
 Select log level from:
@@ -98,7 +99,6 @@ Select log level from:
 
 ''',
         defaultsTo: null,
-        allowMultiple: false,
         abbr: null,
         allowed: null);
 
@@ -141,13 +141,15 @@ Select log level from:
 final _logger = new Logger('schemadot');
 
 main(List<String> args) {
-  Logger.root.onRecord.listen((LogRecord r) => print('${r.loggerName} [${r.level}]:\t${r.message}'));
+  Logger.root.onRecord.listen(
+      (LogRecord r) => print('${r.loggerName} [${r.level}]:\t${r.message}'));
   Logger.root.level = Level.OFF;
   final Map argResults = _parseArgs(args);
   final Map options = argResults['options'];
 
   try {
-    if (options['in-uri'] == null) throw new ArgumentError('option: in-uri is required');
+    if (options['in-uri'] == null)
+      throw new ArgumentError('option: in-uri is required');
   } on ArgumentError catch (e) {
     print(e);
     _usage();
@@ -161,7 +163,8 @@ main(List<String> args) {
     new HttpClient()
         .getUrl(uri)
         .then((HttpClientRequest request) => request.close())
-        .then((HttpClientResponse response) => new convert.Utf8Decoder().bind(response).join())
+        .then((HttpClientResponse response) =>
+            new convert.Utf8Decoder().bind(response).join())
         .then((text) {
       completer.complete(text);
     });
@@ -173,7 +176,8 @@ main(List<String> args) {
   }
 
   completer.future.then((schemaText) {
-    final Future schema = JsonSchema.createSchemaAsync(convert2.json.decode(schemaText));
+    final Future schema =
+        JsonSchema.createSchemaAsync(convert.json.decode(schemaText));
     schema.then((schema) {
       final String dot = createDot(schema);
       if (options['out-file'] != null) {
